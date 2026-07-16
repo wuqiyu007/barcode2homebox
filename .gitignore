@@ -1,0 +1,19 @@
+# 环境变量（含真实 Homebox token / API key），勿提交
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# 运行时生成的配置（设置页填写的 GS1/Vision 配置）
+data/
+
+# 内部交接文档（含真实 API key 与内网路径，不对外公开）
+开发交接文档.md
+
+# 系统 / 编辑器
+.DS_Store
+*.log

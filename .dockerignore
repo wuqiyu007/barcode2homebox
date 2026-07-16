@@ -1,0 +1,14 @@
+# 敏感 / 内部文件不进入镜像构建上下文
+.env
+data/
+开发交接文档.md
+
+# 版本控制与编辑器
+.git
+.gitignore
+.DS_Store
+*.log
+
+# 运行时缓存
+__pycache__/
+*.pyc

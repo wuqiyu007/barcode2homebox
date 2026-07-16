@@ -1,0 +1,34 @@
+services:
+  barcode2homebox:
+    image: barcode2homebox
+    container_name: barcode2homebox
+    ports:
+      - "8000:8000"
+    environment:
+      HOMEBOX_URL: ${HOMEBOX_URL}
+      HOMEBOX_TOKEN: ${HOMEBOX_TOKEN}
+      # 会话 cookie 签名密钥；固定值可避免容器重启后用户被强制登出
+      APP_SECRET: ${APP_SECRET}
+      HOMEBOX_EMAIL: ${HOMEBOX_EMAIL}
+      HOMEBOX_PASSWORD: ${HOMEBOX_PASSWORD}
+      HOMEBOX_LOCATION_ID: ${HOMEBOX_LOCATION_ID}
+      # Homebox 请求超时（秒）；走内网时给足余量，避免偶发超时导致登录失败
+      HOMEBOX_TIMEOUT: ${HOMEBOX_TIMEOUT:-30}
+      GS1_API_URL: ${GS1_API_URL}
+      GS1_SECRET_ID: ${GS1_SECRET_ID}
+      GS1_SECRET_KEY: ${GS1_SECRET_KEY}
+      VISION_API_URL: ${VISION_API_URL}
+      VISION_API_KEY: ${VISION_API_KEY}
+      VISION_MODEL: ${VISION_MODEL}
+    restart: unless-stopped
+    # 后端通过 HOMEBOX_URL（公网或内网地址）连接 Homebox，无需额外网络配置。
+    # 若 Homebox 与本项目在同一台 Docker 主机，可取消下方注释加入其网络实现内网互通：
+    #   networks:
+    #     - default
+    #     - homebox_default
+    # networks:
+    #   homebox_default:
+    #     external: true
+    # 设置页填写的 GS1/Vision 配置持久化到此卷，容器重建不丢
+    volumes:
+      - ./data:/app/data
