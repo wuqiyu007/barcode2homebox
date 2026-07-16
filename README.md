@@ -81,7 +81,7 @@ docker compose up -d --build
 
 > ⚠️ **摄像头需要安全上下文**：浏览器仅在 `https://` 或 `localhost` 下允许调用摄像头。
 > 若走 NAS 局域网 `http://IP:8000`，实时摄像头会被浏览器拦截，此时请用「上传图片」方式（不受限）。
-> 建议用反代 + 证书（如你已有的 example.com 域名）提供 https 后再用摄像头。
+> 建议用反代 + 证书（如自有域名）提供 https 后再用摄像头。
 
 ## 配置项（写在 `docker-compose.yml` 的 `environment` 里）
 
@@ -90,7 +90,7 @@ docker compose up -d --build
 
 | 变量 | 说明 | 默认值 |
 |---|---|---|
-| `HOMEBOX_URL` | Homebox 地址，如 `https://hass.example.com:666` | `https://homebox.example.com:666` |
+| `HOMEBOX_URL` | Homebox 地址，如 `https://homebox.example.com:666` | `https://homebox.example.com:666` |
 | `HOMEBOX_TOKEN` | 直接给 token（推荐）；或填账号密码自动登录 | 空 |
 | `APP_SECRET` | 会话 cookie 签名密钥，固定值避免重启后强制登出 | `change-me-to-a-random-32byte-hex` |
 | `HOMEBOX_EMAIL` / `HOMEBOX_PASSWORD` | 账号密码登录（无 token 时使用） | 空 |
