@@ -18,7 +18,7 @@ import config as cfg
 log = logging.getLogger("lookup")
 
 OFF_URL = "https://world.openfoodfacts.org/api/v2/product/{barcode}.json"
-TIMEOUT = int(os.getenv("LOOKUP_TIMEOUT", "12"))
+TIMEOUT = int(os.getenv("LOOKUP_TIMEOUT", "30"))
 
 
 def lookup_openfoodfacts(barcode: str) -> dict | None:

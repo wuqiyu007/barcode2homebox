@@ -159,7 +159,7 @@ def api_test_settings(payload: dict, _: None = Depends(require_auth)):
         return {"ok": False, "error": "GS1 配置不完整"}
     try:
         _, headers = lookup._build_gs1_auth(sid, skey)
-        r = requests.get(url, params={"Code": "6901234567890"}, headers=headers, timeout=12, verify=False)
+        r = requests.get(url, params={"Code": "6901234567890"}, headers=headers, timeout=30, verify=False)
         # 200 即接口可达（即便该测试条码未登记也说明鉴权通过）
         return {"ok": r.status_code == 200, "status": r.status_code}
     except Exception as e:  # noqa: BLE001
