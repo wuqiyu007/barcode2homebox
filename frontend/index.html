@@ -28,6 +28,8 @@
     .header .title-group { display: flex; flex-direction: column; gap: 1px; }
     .header h1 { font-size: 14px; font-weight: 500; line-height: 1.2; }
     .header .sub { display: block; font-size: 11px; color: #7bb342; line-height: 1.2; }
+    .header .title-row { display: flex; align-items: baseline; gap: 6px; }
+    .header .ver { font-size: 10px; color: var(--muted); opacity: .55; font-weight: 400; letter-spacing: .3px; }
 
     .main { max-width: 800px; margin: 0 auto; padding: 8px 14px 60px; }
     .main .tagline {
@@ -319,7 +321,7 @@
       <button class="login-btn" id="loginBtn">登录 <span>→</span></button>
       <div class="status" id="loginStatus"></div>
     </div>
-    <div class="login-footer">条码扫码录入 v1.0</div>
+    <div class="login-footer">条码扫码录入 v1.01</div>
   </div>
 
   <div class="header">
@@ -329,10 +331,13 @@
       <path d="M18 21 H21 V18"/>
       <path d="M21 6 V3 H18"/>
     </svg>
-    <div class="title-group">
-      <h1>Homebox 扫码录入</h1>
-      <div class="sub">识别商品条码，一键入库 Homebox</div>
-    </div>
+      <div class="title-group">
+        <div class="title-row">
+          <h1>Homebox 扫码录入</h1>
+          <span class="ver">v1.01</span>
+        </div>
+        <div class="sub">识别商品条码，一键入库 Homebox</div>
+      </div>
     <div class="who">
       <span class="email" id="whoEmail"></span>
       <button class="header-btn nav active" id="navScan" title="扫码录入">
