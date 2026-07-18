@@ -33,6 +33,7 @@ import lookup
 import homebox_client as hb
 import session
 import config as cfg
+import cache_db
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("app")
@@ -164,6 +165,20 @@ def api_test_settings(payload: dict, _: None = Depends(require_auth)):
         return {"ok": r.status_code == 200, "status": r.status_code}
     except Exception as e:  # noqa: BLE001
         return {"ok": False, "error": str(e)}
+
+
+# ---------- 本地条码缓存 ----------
+@app.get("/api/cache/stats")
+def api_cache_stats(_: None = Depends(require_auth)):
+    """本地条码缓存统计：条数 + 累计命中次数。"""
+    return cache_db.stats()
+
+
+@app.post("/api/cache/clear")
+def api_cache_clear(_: None = Depends(require_auth)):
+    """清空本地条码缓存，返回清空前条数。"""
+    n = cache_db.clear()
+    return {"ok": True, "cleared": n}
 
 
 # ---------- 需登录端点 ----------
@@ -320,6 +335,7 @@ async def scan(image: UploadFile = File(...), _: None = Depends(require_auth)):
         vis, reason = vision_fallback(data, mime)
         if vis:
             vis["barcode"] = barcode
+            cache_db.put(vis)   # 视觉识别成功也入缓存（有条码即可）
             return {"barcode": barcode, "product": vis, "decoded_by": "barcode+vision"}
         return {"barcode": barcode, "product": product, "decoded_by": "barcode"}
     return {"barcode": barcode, "product": product, "decoded_by": "barcode"}
