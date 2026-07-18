@@ -156,6 +156,11 @@
       display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 4px;
       background: var(--green-light); color: var(--green); font-weight: 500;
     }
+    .tag.cache { background: rgba(250,204,21,.16); color: #facc15; }
+    .cache-stat {
+      font-size: 11px; color: var(--muted); text-align: center;
+      margin: 0 0 12px; min-height: 14px;
+    }
 
     .empty-state {
       text-align: center; padding: 40px 16px; color: var(--muted);
@@ -321,7 +326,7 @@
       <button class="login-btn" id="loginBtn">登录 <span>→</span></button>
       <div class="status" id="loginStatus"></div>
     </div>
-    <div class="login-footer">条码扫码录入 v1.03</div>
+    <div class="login-footer">条码扫码录入 v1.04</div>
   </div>
 
   <div class="header">
@@ -334,7 +339,7 @@
       <div class="title-group">
         <div class="title-row">
           <h1>Homebox 扫码录入</h1>
-          <span class="ver">v1.03</span>
+          <span class="ver">v1.04</span>
         </div>
         <div class="sub">识别商品条码，一键入库 Homebox</div>
       </div>
@@ -366,6 +371,7 @@
   </div>
 
   <div class="main" id="scanPage">
+    <div class="cache-stat" id="cacheStat"></div>
     <div class="tabs">
       <div class="tab active" data-tab="cam">条码识别</div>
       <div class="tab" data-tab="file">AI图片识别</div>
@@ -499,11 +505,19 @@
           <span class="test-result" id="visionTestResult"></span>
         </div>
       </div>
+      <div class="settings-section">
+        <h3>本地条码缓存</h3>
+        <p class="settings-hint">已成功解析的商品会自动缓存，再次扫描同一条码直接命中，省去 GS1 / 视觉识别的费用。</p>
+        <div class="set-test-row">
+          <span class="test-result" id="cacheInfo"></span>
+          <button class="btn btn-outline" id="clearCache">清空缓存</button>
+        </div>
+      </div>
       <button class="btn btn-green settings-save" id="saveSettings">保存设置</button>
       <div class="status" id="settingsStatus"></div>
     </div>
   </div>
 
-  <script src="app.js?v=17"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>
