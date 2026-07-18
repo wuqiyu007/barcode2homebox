@@ -31,6 +31,7 @@ async function checkAuth() {
     if (d.authenticated) {
       hideLogin();
       loadLocations();
+      loadCacheStat();
     } else {
       showLogin();
     }
@@ -392,12 +393,14 @@ function showResult(product, barcode, decodedBy) {
     if (product.manufacturer) meta += `<span class="label">厂家</span> ${product.manufacturer}<br/>`;
     if (product.category) meta += `<span class="label">品类</span> ${product.category}<br/>`;
     meta += `<span class="label">来源</span> ${product.source || "-"} `;
+    if (product.from_cache) meta += `<span class="tag cache">⚡缓存命中</span> `;
     if (decodedBy) meta += `<span class="tag">${decodedBy}</span>`;
   } else {
     meta = `<span class="label">条码</span> ${barcode || ""}<br/>数据源中未匹配，可手动填写名称，或用 AI 识别商品图片`;
   }
   $("rMeta").innerHTML = meta;
   $("aiFallbackBtn").style.display = found ? "none" : "inline-flex";
+  loadCacheStat();   // 每次出结果后刷新缓存命中统计
 }
 
 // ---- AI 托底：未匹配时切到图片识别 tab ----
@@ -469,6 +472,31 @@ function setStatus(id, msg, cls) {
   el.textContent = msg;
   el.className = "status" + (cls ? " " + cls : "");
 }
+
+// ---- 本地缓存统计 + 清空 ----
+async function loadCacheStat() {
+  try {
+    const r = await apiFetch("/api/cache/stats");
+    const d = await r.json();
+    const el = document.getElementById("cacheStat");
+    if (el) el.textContent = `本地缓存 ${d.count} 条 · 累计命中 ${d.hits} 次`;
+    const ci = document.getElementById("cacheInfo");
+    if (ci) ci.textContent = `已缓存 ${d.count} 条 · 累计命中 ${d.hits} 次`;
+  } catch (_) { /* 忽略 */ }
+}
+
+$("clearCache").onclick = async () => {
+  if (!confirm("确定清空本地条码缓存？已缓存的商品将重新走 GS1 / 视觉查询。")) return;
+  try {
+    const r = await apiFetch("/api/cache/clear", { method: "POST" });
+    const d = await r.json();
+    if (d.ok) {
+      const ci = $("cacheInfo");
+      if (ci) ci.textContent = `已清空（共 ${d.cleared} 条）`;
+      loadCacheStat();
+    }
+  } catch (_) {}
+};
 
 // ---- 启动：检查登录态 ----
 checkAuth();
