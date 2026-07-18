@@ -14,6 +14,7 @@ import logging
 import requests
 
 import config as cfg
+import cache_db
 
 log = logging.getLogger("lookup")
 
@@ -137,8 +138,13 @@ def lookup_gs1(barcode: str) -> dict | None:
 
 
 def lookup(barcode: str) -> dict:
-    """主查询：多源兜底。中国条码优先 GS1，国际条码优先 OFF，回落到另一源。"""
-    # 中国条码前缀 690-699，优先走 GS1（更权威更全）
+    """主查询：先查本地缓存，未命中再走多源兜底（中国条码优先 GS1，国际条码优先 OFF）。"""
+    # 1) 本地缓存优先：命中直接返回，省去 GS1 / OFF 查询费用
+    cached = cache_db.get(barcode)
+    if cached is not None:
+        cache_db.record_hit(barcode)
+        return cached
+    # 2) 外部查询：中国条码前缀 690-699，优先走 GS1（更权威更全）
     if barcode.startswith("69"):
         sources = (lookup_gs1, lookup_openfoodfacts)
     else:
@@ -146,5 +152,6 @@ def lookup(barcode: str) -> dict:
     for fn in sources:
         res = fn(barcode)
         if res:
+            cache_db.put(res)   # 成功解析即写入缓存
             return res
     return {"found": False, "barcode": barcode}
