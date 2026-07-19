@@ -47,7 +47,7 @@ docker-compose.yml 核心（开箱即用，仅需改 environment 里的几个值
 ```yaml
 services:
   barcode2homebox:
-    image: ghcr.io/wuqiyu007/barcode2homebox:latest
+    image: ghcr.io/kiwiwiki007/barcode2homebox:latest
     container_name: barcode2homebox
     restart: always
     pull_policy: always   # 强制每次 up 都拉取最新 latest，避免本地旧镜像不更新
