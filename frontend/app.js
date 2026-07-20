@@ -96,6 +96,7 @@ $("navSettings").onclick = () => showView("settings");
 $("settingsBack").onclick = () => showView("scan");
 
 function showView(name) {
+  clearFlow();   // 切换页面时清理图片与识别结果，避免残留
   const scan = name === "scan";
   $("scanPage").style.display = scan ? "block" : "none";
   $("settingsPage").classList.toggle("active", !scan);
@@ -244,6 +245,9 @@ document.querySelectorAll(".tab").forEach((t) => {
     t.classList.add("active");
     $("panel-" + t.dataset.tab).classList.add("active");
     if (t.dataset.tab !== "cam") stopCam();
+    // 切换 tab 时清理上一环节残留：
+    // 进入「AI 图片识别」清掉扫码信息；切回「条码识别」清掉 AI 图片与识别结果
+    clearFlow();
   };
 });
 
@@ -403,9 +407,12 @@ function showResult(product, barcode, decodedBy) {
     if (product.from_cache) meta += `<span class="tag cache">⚡缓存命中</span> `;
     if (decodedBy) meta += `<span class="tag">${decodedBy}</span>`;
   } else {
-    meta = `<span class="label">条码</span> ${barcode || ""}<br/>数据源中未匹配，可手动填写名称，或用 AI 识别商品图片`;
+    meta = `<span class="label">条码</span> ${barcode || ""}<br/>该条码未匹配到商品，请切换到「AI 图片识别」上传商品图片进行识别`;
   }
   $("rMeta").innerHTML = meta;
+  // 未匹配到商品时：没有可录入的商品，隐藏「录入」，仅提示用 AI 识别；
+  // 命中时才显示「录入」按钮。
+  $("addBtn").style.display = found ? "inline-flex" : "none";
   $("aiFallbackBtn").style.display = found ? "none" : "inline-flex";
   loadCacheStat();   // 每次出结果后刷新缓存命中统计
 }
@@ -455,7 +462,7 @@ $("addBtn").onclick = async () => {
     if (d.homebox && d.homebox.ok) {
       setStatus("addStatus", "✅ 录入成功！", "ok");
       btn.disabled = true;
-      setTimeout(() => { clearResult(); }, 1200);
+      setTimeout(() => { clearFlow(); }, 1200);
     } else {
       setStatus("addStatus", "录入失败: " + (d.homebox?.error || JSON.stringify(d)), "err");
     }
@@ -465,13 +472,19 @@ $("addBtn").onclick = async () => {
   btn.disabled = false;
 };
 
-// ---- 录入后清空结果，便于连续扫码 ----
-function clearResult() {
+// ---- 清理流程：隐藏结果卡片、重置状态与上传区，保证扫码/AI 识别之间干净切换 ----
+function clearFlow() {
   $("result").classList.remove("show");
   $("addStatus").textContent = "";
   $("qtyInput").value = 1;
   lastProduct = null;
   lastBarcode = null;
+  // 重置上传区：清除已选图片与文件，避免 AI 识别的图片/结果残留
+  const up = $("uploadPreview");
+  if (up) { up.src = ""; up.style.display = "none"; }
+  const fi = $("fileInput");
+  if (fi) fi.value = "";
+  $("uploadBtn").disabled = true;
 }
 
 function setStatus(id, msg, cls) {
